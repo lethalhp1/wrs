@@ -1,339 +1,78 @@
-	
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Warriors Market</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: black;
-      color: white;
-      overflow: hidden;
-      position: relative;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('https://imgur.com/a/tlzIma6') center center/cover no-repeat;
-      filter: brightness(0.3);
-      z-index: -1;
-    }
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-    }
-    .loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .loader span {
-      font-size: 2rem;
-      color: white;
-      text-shadow: 0 0 10px white;
-    }
-    @keyframes fadeOut {
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    .logo-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .logo-container img {
-      width: 180px;
-      height: auto;
-      max-width: 100%;
-    }
-    .content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 20px;
-    }
-    p {
-      font-size: 1.5rem;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px #fff;
-      opacity: 0;
-      animation: fadeInUp 1s ease-in-out 2s forwards;
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(2, auto);
-      gap: 15px;
-      opacity: 0;
-      animation: fadeInUp 1s ease-in-out 2.5s forwards;
-      justify-content: center;
-      margin: 0 auto;
-    }
-    .button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 25px;
-      font-size: 1rem;
-      color: white;
-      text-decoration: none;
-      border: 2px solid white;
-      border-radius: 50px;
-      background: rgba(255,255,255,0.1);
-      transition: all 0.3s ease, transform 0.2s;
-      box-shadow: 0 0 15px rgba(255,255,255,0.3);
-      position: relative;
-      overflow: hidden;
-      min-width: 180px;
-      height: 40px;
-    }
-    @media (min-width: 769px) {
-      .buttons .button:nth-child(2n) {
-        margin-top: 20px;
-      }
-    }
-    .button::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.3);
-      transform: skewX(-30deg);
-      transition: left 0.3s ease;
-      z-index: 1;
-    }
-    .button:hover::after {
-      left: 100%;
-    }
-    .button:hover {
-      background: rgba(255,255,255,0.7);
-      color: black;
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(255,255,255,0.5);
-    }
-    .button i {
-      margin-right: 8px;
-    }
-    @media (max-width: 768px) {
-      body {
-        overflow-y: auto;
-      }
-      p {
-        font-size: 1.2rem;
-      }
-      .buttons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .button {
-        width: 90%;
-        margin: 10px 0;
-        height: 40px;
-      }
-      .buttons .button:nth-child(2n) {
-        margin-top: 0;
-      }
-      .button:hover {
-        transform: scale(1.03);
-      }
-    }
-    #error-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 10000;
-    }
-    .error-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: #fff;
-    }
-    .error-code {
-      font-size: 120px;
-      font-weight: bold;
-      animation: glitch 2s infinite;
-    }
-    .message {
-      font-size: 24px;
-      margin: 20px 0;
-    }
-    .gear {
-      position: absolute;
-      border-radius: 50%;
-      border: 5px solid #fff;
-      animation: spin 4s linear infinite;
-    }
-    .gear1 {
-      width: 80px;
-      height: 80px;
-      top: -100px;
-      left: -120px;
-      border-color: #ff6b6b;
-    }
-    .gear2 {
-      width: 60px;
-      height: 60px;
-      top: -60px;
-      right: -100px;
-      border-color: #4ecdc4;
-      animation-direction: reverse;
-    }
-    .gear3 {
-      width: 40px;
-      height: 40px;
-      bottom: -80px;
-      left: -80px;
-      border-color: #45b7d1;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes glitch {
-      0% { transform: translate(0); }
-      20% { transform: translate(-2px, 2px); }
-      40% { transform: translate(-2px, -2px); }
-      60% { transform: translate(2px, 2px); }
-      80% { transform: translate(2px, -2px); }
-      100% { transform: translate(0); }
-    }
-    .pulse {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-    .debug {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.8);
-      padding: 10px;
-      color: black;
-      z-index: 10001;
-    }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const loader = document.querySelector('.loader');
-      setTimeout(() => {
-        loader.style.animation = "fadeOut 1s forwards";
-      }, 2000);
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      document.body.appendChild(canvas);
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const particles = [];
-      for (let i = 0; i < 300; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 2 + 0.5,
-          dx: (Math.random() - 0.5) * 1.5,
-          dy: (Math.random() - 0.5) * 1.5
-        });
-      }
-
-      function drawParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        particles.forEach(p => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-          p.x += p.dx;
-          p.y += p.dy;
-          if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-          if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-        });
-        requestAnimationFrame(drawParticles);
-      }
-      drawParticles();
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Технические работы</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('https://i.imgur.com/aGFBEZT.jpeg') no-repeat center center;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-telegram {
+            background-color: #0088cc;
+        }
+        
+        .btn-telegram:hover {
+            background-color: #0077b5;
+        }
+        
+        h1 {
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
- 
-  <div class="background"></div>
-  <div class="loader">
-    <span>Загрузка...</span>
-  </div>
-  
-  <div class="content">
-    <div class="logo-container">
-      <img src="logos.png" alt="Logo">
+    <div class="overlay">
+        <h1>На сайте проводятся технические работы.</h1>
+        <p>Вы можете совершить покупку в нашем Telegram-боте либо на Kraken.</p>
+        <p>Приносим свои извинения за временные неудобства.</p>
+        <p>С уважением, команда LoveShop❤️</p>
+        
+        <div class="buttons">
+            <a href="https://t.me/store123sbot" class="btn btn-telegram">Бот автопродаж</a>
+            <a href="https://krkm37.cc/loveshop" class="btn">Мы на Kraken</a>
+        </div>
     </div>
-    
-    <p>Актуальные контакты нашего магазина<br>находятся на этом сайте.<br>Сверяйте их, прежде чем совершить покупку</p>
-  
-    <div class="buttons">
-      <a href="https://url-eco.app/pPp3bO" class="button"><i class="fa-solid fa-user"></i>Оператор</a>
-      <a href="https://url-eco.app/KgW6Du" class="button"><i class="fa-solid fa-user"></i>Оператор REZERV</a>
-      <a href="http://bitlis.top/bK7B7P" class="button"><i class="fa-solid fa-headset"></i>Поддержка</a>
-      <a href="https://url-eco.app/ex5CIW	" class="button"><i class="fa-solid fa-robot"></i>Бот 1</a>
-      <a href="https://url-eco.app/TdmdRn	" class="button"><i class="fa-solid fa-robot"></i>Бот 2</a>
-      <a href="https://url-eco.app/OsgZap" class="button"><i class="fa-solid fa-robot"></i>Бот 3</a>
-
-      <a href="https://url-eco.app/p83xUW" class="button"><i class="fa-solid fa-robot"></i>Бот 4</a>
-
-      <a href="https://t.me/MFRR01" class="button"><i class="fa-solid fa-briefcase"></i>Работа 1</a>
-      <a href="http://bitlis.top/WQu66n" class="button"><i class="fa-solid fa-briefcase"></i>Работа 2</a>
-    </div>
-  </div>
-
-  <div id="error-overlay">
-    <div class="error-container">
-      <div class="gear gear1"></div>
-      <div class="gear gear2"></div>
-      <div class="gear gear3"></div>
-      <h1 class="error-code">404</h1>
-      <p class="message pulse">Сервис временно недоступен</p>
-      <p>Пожалуйста, произведите оплату для продолжения использования</p>
-     </div>
-  </div>
 </body>
 </html>
